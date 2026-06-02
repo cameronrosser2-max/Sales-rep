@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Rep Finder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f4f6f9;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #16213e;
+      color: #fff;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header span.badge {
+      background: #0f3460;
+      border: 1px solid #e94560;
+      color: #e94560;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 2.5rem auto;
+      padding: 0 1.25rem;
+    }
+
+    .search-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .search-card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: #16213e;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-group input {
+      border: 1.5px solid #dde1ea;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.95rem;
+      color: #1a1a2e;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .form-group input:focus {
+      border-color: #e94560;
+    }
+
+    button[type="submit"] {
+      align-self: flex-end;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.68rem 1.6rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+      margin-top: 1.35rem;
+    }
+
+    button[type="submit"]:hover { background: #c73652; }
+    button[type="submit"]:active { transform: scale(0.97); }
+
+    .alert {
+      background: #fff3f5;
+      border: 1.5px solid #e94560;
+      color: #c73652;
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .results-header {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .results-header strong { color: #16213e; }
+
+    .job-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #e94560;
+      transition: box-shadow 0.2s;
+    }
+
+    .job-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+    .job-card .job-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #16213e;
+      margin-bottom: 0.3rem;
+    }
+
+    .job-card .job-meta {
+      font-size: 0.82rem;
+      color: #666;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .job-card .job-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+    .job-card a.view-btn {
+      display: inline-block;
+      background: #16213e;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .job-card a.view-btn:hover { background: #0f3460; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #888;
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.78rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#128188; Sales Rep Finder</h1>
+  <span class="badge">Powered by Indeed</span>
+</header>
+
+<main>
+  <div class="search-card">
+    <h2>Search for Sales Representative Roles</h2>
+    <form method="POST" action="/">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="query">Job Title / Keywords</label>
+          <input
+            type="text"
+            id="query"
+            name="query"
+            placeholder="e.g. Sales Representative, Account Executive"
+            value="{{ query }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="e.g. New York, NY"
+            value="{{ location }}"
+          />
+        </div>
+        <button type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  {% if error %}
+    <div class="alert">&#9888; {{ error }}</div>
+  {% endif %}
+
+  {% if results %}
+    <p class="results-header">
+      Found <strong>{{ results|length }}</strong> result(s)
+      {% if query %}for <strong>{{ query }}</strong>{% endif %}
+      {% if location %}in <strong>{{ location }}</strong>{% endif %}
+    </p>
+
+    {% for job in results %}
+      <div class="job-card">
+        <div class="job-title">{{ job.title }}</div>
+        <div class="job-meta">
+          {% if job.company != 'N/A' %}
+            <span>&#127970; {{ job.company }}</span>
+          {% endif %}
+          {% if job.location %}
+            <span>&#128205; {{ job.location }}</span>
+          {% endif %}
+          {% if job.date %}
+            <span>&#128197; {{ job.date[:16] }}</span>
+          {% endif %}
+        </div>
+        {% if job.link and job.link != '#' %}
+          <a class="view-btn" href="{{ job.link }}" target="_blank" rel="noopener noreferrer">View Job &rarr;</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  {% elif request.method == 'POST' and not error %}
+    <div class="empty-state">
+      <div class="icon">&#128269;</div>
+      <p>No results found. Try different keywords or a broader location.</p>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">&#128188;</div>
+      <p>Enter a job title and optional location above to find sales rep opportunities.</p>
+    </div>
+  {% endif %}
+</main>
+
+<footer>Sales Rep Finder &mdash; built with Flask &amp; deployed on Railway</footer>
+
+</body>
+</html>
