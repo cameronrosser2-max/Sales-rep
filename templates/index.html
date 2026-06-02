@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Rep Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input { padding: 8px; width: 300px; }
+        button { padding: 8px 16px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Sales Rep Search</h1>
+    <input type="text" id="query" placeholder="Search sales reps...">
+    <button onclick="search()">Search</button>
+    <div id="results"></div>
+    <script>
+        function search() {
+            const query = document.getElementById('query').value;
+            fetch('/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('results').innerHTML = 
+                    '<p>Results: ' + JSON.stringify(data.results) + '</p>';
+            });
+        }
+    </script>
+</body>
+</html>
